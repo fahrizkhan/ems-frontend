@@ -8,20 +8,59 @@ const EmployeeComponent = () => {
    const [lastname, setLastname] = useState('')
    const [email, setEmail] = useState('')
 
+   const [errors, setErrors] = useState({
+        firstname: '',
+        lastname: '',
+        email: ''
+   })
+
    const navigator = useNavigate();
 
    const saveEmployee = (e) => {
        e.preventDefault();
-        const employee = { firstname, lastname, email };
-        console.log(employee);
+       
+        if (validateForm()) {
+            const employee = { firstname, lastname, email };
+            console.log(employee);
 
-        createEmployee(employee).then((response) => {
+            createEmployee(employee).then((response) => {
             console.log("Employee added successfully", response.data);
             navigator('/employees');
-        }).catch((error) => {
-            console.error("Something went wrong", error);
-        });
+        })
+        }
     }
+
+    function validateForm() {
+        let valid = true;
+        
+        const errorCopy = { ...errors };
+        
+        if (firstname.trim()) {
+            errorCopy.firstname = '';
+        } else {
+            errorCopy.firstname = 'First name is required';
+            valid = false;
+        }
+
+        if (lastname.trim()) {
+            errorCopy.lastname = '';
+        } else {
+            errorCopy.lastname = 'Last name is required';
+            valid = false;
+        }
+
+        if (email.trim()) {
+            errorCopy.email = '';
+        } else {
+            errorCopy.email = 'Email is required';
+            valid = false;
+        }
+
+        setErrors(errorCopy);
+        return valid;
+    }
+    
+
   return (
     <div>
         <div className="container">
@@ -37,10 +76,11 @@ const EmployeeComponent = () => {
                                     type="text"
                                     placeholder="Enter First Name"
                                     name="firstname"
-                                    className="form-control"
+                                    className={`form-control ${errors.firstname ? 'is-invalid' : ''}`}
                                     value={firstname}
                                     onChange={(e) => setFirstname(e.target.value)}
                                 ></input>
+                                {errors.firstname && <div className="invalid-feedback">{errors.firstname}</div>}
                             </div>
 
                             <div className="form-group mb-2">
@@ -49,10 +89,11 @@ const EmployeeComponent = () => {
                                     type="text"
                                     placeholder="Enter Last Name"
                                     name="lastname"
-                                    className="form-control"
+                                    className={`form-control ${errors.lastname ? 'is-invalid' : ''}`}
                                     value={lastname}
                                     onChange={(e) => setLastname(e.target.value)}
                                 ></input>
+                                {errors.lastname && <div className="invalid-feedback">{errors.lastname}</div>}
                             </div>
 
                             <div className="form-group mb-2">
@@ -61,10 +102,11 @@ const EmployeeComponent = () => {
                                     type="text"
                                     placeholder="Enter Email"
                                     name="email"
-                                    className="form-control"
+                                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 ></input>
+                                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                             </div>
 
                             <button className="btn btn-success" onClick={saveEmployee} > Submit </button>
